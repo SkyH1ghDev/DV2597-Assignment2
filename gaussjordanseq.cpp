@@ -4,7 +4,11 @@
  *
  ***************************************************************************/
 
-#include <stdio.h>
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
 #define MAX_SIZE 4096
 
@@ -34,9 +38,17 @@ main(int argc, char** argv)
     Init_Default();		/* Init default values	*/
     Read_Options(argc, argv);	/* Read arguments	*/
     Init_Matrix();		/* Init the matrix	*/
+
+    auto start = std::chrono::steady_clock::now();
+
     work();
+
+    auto end = std::chrono::steady_clock::now();
+
     if (PRINT == 1)
         Print_Matrix();
+
+    std::cout << "Elapsed time = " << std::chrono::duration<double> {end - start}.count() << " sec\n";
 }
 
 void
@@ -50,13 +62,15 @@ work(void)
             A[k][j] = A[k][j] / A[k][k]; /* Division step */
         y[k] = b[k] / A[k][k];
         A[k][k] = 1.0;
-        for (i = k + 1; i < N; i++) {
+        for (i = k + 1; i < N; i++)
+        {
             for (j = k + 1; j < N; j++)
                 A[i][j] = A[i][j] - A[i][k] * A[k][j]; /* Elimination step */
             b[i] = b[i] - A[i][k] * y[k];
             A[i][k] = 0.0;
         }
-        for (i = 0; i < k; i++) {
+        for (i = 0; i < k; i++)
+        {
             for (j = k + 1; j < N; j++)
                 A[i][j] = A[i][j] - A[i][k] * A[k][j]; /* Additional Elimination for Gauss-Jordan */
             y[i] = y[i] - A[i][k] * y[k];
@@ -185,4 +199,6 @@ Read_Options(int argc, char** argv)
                 printf("HELP: try %s -u \n\n", prog);
                 break;
             }
+
+    return 0;
 }

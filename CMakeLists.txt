@@ -1,19 +1,15 @@
 cmake_minimum_required(VERSION 3.30)
-project(Assignment2 LANGUAGES C CXX CUDA)
+project(Assignment2 LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 23)
 
 # CPU
 add_executable(GaussJordanC
-    gaussjordanseq.c
+        gaussjordanseq.cpp
     )
 
 add_executable(OddEvenSortC
     oddevensort.cpp
-    )
-
-add_executable(GaussJordanC
-    gaussjordanseq.c
     )
 
 # CUDA
@@ -30,4 +26,6 @@ add_executable(OddEvenSortCuda
 
 set(GAUSSJORDAN_HEADERS gaussjordan.cuh)
 add_executable(GaussJordanCuda
+        gaussjordan.cu
+        gaussjordanmain.cu
     )
