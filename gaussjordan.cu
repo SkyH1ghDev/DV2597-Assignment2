@@ -22,38 +22,77 @@ __global__ void PostDivision(double* pMatrix, const double* pEqualities, double*
     }
 }
 
-__global__ void Elimination(double* pMatrix, double* pEqualities, double* pResults, std::size_t pNumElements, std::size_t pRow)
+__global__ void Elimination(double* pMatrix, double* pEqualities, const double* pResults, const std::size_t pNumElements, const std::size_t pRow, const std::size_t pMemoryOffset)
 {
-    const std::size_t baseIndex {blockDim.x * blockIdx.x + threadIdx.x + pRow + 1};
+    const std::size_t baseIndex {blockDim.x * blockIdx.x + threadIdx.x};
+    const std::size_t rowAdjustedIndex {baseIndex + pRow + 1};
 
-    if (baseIndex >= pNumElements)
+    // Init Shared Memory
+
+    extern __shared__ double sharedMemory[];
+    double* a {&sharedMemory[0]};
+    double* b {&sharedMemory[pNumElements]};
+
+    for (std::size_t i {threadIdx.x}; i < pNumElements; i += blockDim.x)
+    {
+        a[i] = pMatrix[pRow * pNumElements + i];
+    }
+
+    // Guard Clause
+
+    if (rowAdjustedIndex >= pNumElements)
     {
         return;
     }
 
+    b[threadIdx.x] = pMatrix[rowAdjustedIndex * pNumElements + pRow];
+
+    __syncthreads();
+
+    // Do the thing
+
     for (std::size_t i {pRow + 1}; i < pNumElements; ++i)
     {
-        pMatrix[baseIndex * pNumElements + i] = pMatrix[baseIndex * pNumElements + i] - pMatrix[baseIndex * pNumElements + pRow] * pMatrix[pRow * pNumElements + i];
+        pMatrix[rowAdjustedIndex * pNumElements + i] = pMatrix[rowAdjustedIndex * pNumElements + i] - b[threadIdx.x] * a[i];
     }
 
-    pEqualities[baseIndex] = pEqualities[baseIndex] - pMatrix[baseIndex * pNumElements + pRow] * pResults[pRow];
-    pMatrix[baseIndex * pNumElements + pRow] = 0.0;
+    pEqualities[rowAdjustedIndex] = pEqualities[rowAdjustedIndex] - b[threadIdx.x] * pResults[pRow];
+    pMatrix[rowAdjustedIndex * pNumElements + pRow] = 0.0;
 }
 
-__global__ void EliminationTwo(double* pMatrix, double* pEqualities, double* pResults, std::size_t pNumElements, std::size_t pRow)
+__global__ void EliminationTwo(double* pMatrix, double* pResults, const std::size_t pNumElements, const std::size_t pRow, const std::size_t pMemoryOffset)
 {
     const std::size_t baseIndex {blockDim.x * blockIdx.x + threadIdx.x};
+
+    // Init Shared Memory
+
+    extern __shared__ double sharedMemory[];
+    double* a {&sharedMemory[0]};
+    double* b {&sharedMemory[pMemoryOffset / sizeof(double)]};
+
+    for (std::size_t i {threadIdx.x}; i < pNumElements; i += blockDim.x)
+    {
+        a[i] = pMatrix[pRow * pNumElements + i];
+    }
+
+    // Guard Clause
 
     if (baseIndex >= pRow)
     {
         return;
     }
 
+    b[threadIdx.x] = pMatrix[baseIndex * pNumElements + pRow];
+
+    __syncthreads();
+
+    // Do the thing
+
     for (std::size_t i {pRow + 1}; i < pNumElements; ++i)
     {
-        pMatrix[baseIndex * pNumElements + i] = pMatrix[baseIndex * pNumElements + i] - pMatrix[baseIndex * pNumElements + pRow] * pMatrix[pRow * pNumElements + i];
+        pMatrix[baseIndex * pNumElements + i] = pMatrix[baseIndex * pNumElements + i] - b[threadIdx.x] * a[i];
     }
 
-    pResults[baseIndex] = pResults[baseIndex] - pMatrix[baseIndex * pNumElements + pRow] * pResults[pRow];
+    pResults[baseIndex] = pResults[baseIndex] - b[threadIdx.x] * pResults[pRow];
     pMatrix[baseIndex * pNumElements + pRow] = 0.0;
 }

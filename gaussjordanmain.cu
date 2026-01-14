@@ -127,6 +127,8 @@ __host__ void Print_Matrix(const std::array<double, MAX_SIZE * MAX_SIZE>& pMatri
 
 __host__ int main(int argc, char** argv)
 {
+    cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
+
     static std::array<double, MAX_SIZE * MAX_SIZE> matrix {0};
     static std::array<double, MAX_SIZE> equalities {0};
     static std::array<double, MAX_SIZE> results {0};
@@ -162,13 +164,17 @@ __host__ int main(int argc, char** argv)
 
     for (std::size_t row {0}; row < numElements; ++row)
     {
-        constexpr std::uint32_t numBlocks {32};
-        constexpr std::uint32_t numThreads {64};
+        constexpr std::uint32_t numBlocks {64};
+        constexpr std::uint32_t numThreads {32};
+
+        const std::uint64_t a {numElements * sizeof(double)};
+        const std::uint64_t b {numThreads * sizeof(double)};
+        const std::uint64_t sharedMemorySize {a + b};
 
         Division<<<numBlocks, numThreads>>>(cudaMatrix, numElements, row);
         PostDivision<<<1, 1>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row);
-        Elimination<<<numBlocks, numThreads>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row);
-        EliminationTwo<<<numBlocks, numThreads>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row);
+        Elimination<<<numBlocks, numThreads, sharedMemorySize>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row, a);
+        EliminationTwo<<<numBlocks, numThreads, sharedMemorySize>>>(cudaMatrix, cudaResults, numElements, row, a);
     }
 
     auto end = std::chrono::steady_clock::now();
