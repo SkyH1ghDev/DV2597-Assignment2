@@ -22,7 +22,7 @@ __host__ void print_numbers(const std::vector<int>& numbers)
 
 __host__ int main()
 {
-    constexpr unsigned int size = 7; // Number of elements in the input
+    constexpr std::size_t size = 1 << 19; // Number of elements in the input
 
     // Initialize a vector with integers of value 0
     std::vector<int> numbers(size);
@@ -46,10 +46,26 @@ __host__ int main()
     auto start = std::chrono::steady_clock::now();
     //OneBlockSort<<<1, 5>>>(cudaData, numbers.size());
 
-    for (int i = 0; i < cudaDataSize; ++i)
+    bool errFlag1 = false, errFlag2 = false;
+
+    for (std::size_t i = 0; i < cudaDataSize; ++i)
     {
-        MultiBlockSort_1<<<3, 1>>>(cudaData, numbers.size());
-        MultiBlockSort_2<<<3, 1>>>(cudaData, numbers.size());
+        MultiBlockSort_1<<<1024, 256>>>(cudaData, numbers.size());
+        cudaError_t err = cudaGetLastError();
+        if (err != cudaSuccess && !errFlag1)
+        {
+            errFlag1 = true;
+            std::cerr << "Error (Multiblock_1): " << cudaGetErrorString(err) << ", at iteration: " << i << "\n";
+        }
+
+        MultiBlockSort_2<<<1024, 256>>>(cudaData, numbers.size());
+
+        err = cudaGetLastError();
+        if (err != cudaSuccess && !errFlag2)
+        {
+            errFlag2 = true;
+            std::cerr << "Error (Multiblock_2): " << cudaGetErrorString(err) << ", at iteration: " << i << "\n";
+        }
     }
 
     auto end = std::chrono::steady_clock::now();
@@ -57,7 +73,7 @@ __host__ int main()
     cudaMemcpy(numbers.data(), cudaData, cudaDataSize, cudaMemcpyDeviceToHost);
     cudaFree(cudaData);
 
-    print_numbers(numbers);
+    //print_numbers(numbers);
     print_sort_status(numbers);
     std::cout << "Elapsed time =  " << std::chrono::duration<double>(end - start).count() << " sec\n";
 }

@@ -7,8 +7,19 @@
 // Total number of odd phases + even phases = the number of elements to sort
 void oddeven_sort(std::vector<int>& numbers)
 {
+    int newPercentage = 0;
+    int oldPercentage = 0;
+
     auto s = numbers.size();
     for (int i = 1; i <= s; i++) {
+
+        newPercentage = (i * 100) / s;
+        if (newPercentage != oldPercentage)
+        {
+            oldPercentage = newPercentage;
+            std::cout << "Done: " << newPercentage << "%\n";
+        }
+
         for (int j = i % 2; j < s-1; j = j + 2) {
             if (numbers[j] > numbers[j + 1]) {
                 std::swap(numbers[j], numbers[j + 1]);
@@ -24,7 +35,7 @@ void print_sort_status(std::vector<int> numbers)
 
 int main()
 {
-    constexpr unsigned int size = 100000; // Number of elements in the input
+    constexpr unsigned int size = 1 << 19; // Number of elements in the input
 
     // Initialize a vector with integers of value 0
     std::vector<int> numbers(size);

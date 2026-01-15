@@ -2,7 +2,7 @@
 
 #include "oddevensort.cuh"
 
-__global__ void OneBlockSort(int* data, int dataSize)
+__global__ void OneBlockSort(int* data, std::size_t dataSize)
 {
     const std::uint32_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
     const std::uint32_t i = 2 * baseIndex + 1;
@@ -38,12 +38,12 @@ __global__ void OneBlockSort(int* data, int dataSize)
     }
 }
 
-__global__ void MultiBlockSort_1(int* data, int dataSize)
+__global__ void MultiBlockSort_1(int* data, std::size_t dataSize)
 {
-    const std::uint32_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
-    const std::uint32_t i = 2 * baseIndex + 1;
+    const std::size_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
+    const std::size_t i = 2 * baseIndex + 1;
 
-    if (i > dataSize)
+    if (i >= dataSize)
     {
         return;
     }
@@ -54,12 +54,12 @@ __global__ void MultiBlockSort_1(int* data, int dataSize)
     }
 }
 
-__global__ void MultiBlockSort_2(int* data, int dataSize)
+__global__ void MultiBlockSort_2(int* data, std::size_t dataSize)
 {
-    const std::uint32_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
-    const std::uint32_t i = 2 * baseIndex + 1;
+    const std::size_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
+    const std::size_t i = 2 * baseIndex + 1;
 
-    if (i > dataSize || i + 1 > dataSize)
+    if (i + 1 >= dataSize)
     {
         return;
     }

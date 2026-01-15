@@ -152,9 +152,23 @@ __host__ int main(int argc, char** argv)
     double* cudaResults = nullptr;
     std::size_t cudaResultsSize = sizeof(*cudaResults) * numElements;
 
-    cudaMalloc(reinterpret_cast<void**>(&cudaMatrix), cudaMatrixSize);
-    cudaMalloc(reinterpret_cast<void**>(&cudaEqualities), cudaEqualitiesSize);
-    cudaMalloc(reinterpret_cast<void**>(&cudaResults), cudaResultsSize);
+    cudaError_t cudaErr = cudaMalloc(reinterpret_cast<void**>(&cudaMatrix), cudaMatrixSize);
+    if (cudaErr != cudaSuccess)
+    {
+        std::cout << "Cuda Error Malloc 1: " << cudaGetErrorString(cudaErr) << "\n";
+    }
+
+    cudaErr = cudaMalloc(reinterpret_cast<void**>(&cudaEqualities), cudaEqualitiesSize);
+    if (cudaErr != cudaSuccess)
+    {
+        std::cout << "Cuda Error Malloc 2: " << cudaGetErrorString(cudaErr) << "\n";
+    }
+
+    cudaErr = cudaMalloc(reinterpret_cast<void**>(&cudaResults), cudaResultsSize);
+    if (cudaErr != cudaSuccess)
+    {
+        std::cout << "Cuda Error Malloc 3: " << cudaGetErrorString(cudaErr) << "\n";
+    }
 
     cudaMemcpy(cudaMatrix, matrix.data(), cudaMatrixSize, cudaMemcpyHostToDevice);
     cudaMemcpy(cudaEqualities, equalities.data(), cudaEqualitiesSize, cudaMemcpyHostToDevice);
