@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2026.3.8)  19 MAR 2026 01:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2026.3.8)  20 MAR 2026 17:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -228,34 +228,34 @@ LaTeX Font Info:    External font `cmex10' loaded for size
  [1
 
 {/home/skyh1ghdev/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map}]
-Overfull \hbox (3.66731pt too wide) in paragraph at lines 23--27
-\OT1/cmr/m/n/10 parallellisation of this algorithm could require multiple techniques and mechanics. 
+Overfull \hbox (5.4172pt too wide) in paragraph at lines 23--30
+\OT1/cmr/m/n/10 reduced row echelon form that can be used to present solutions to linear equations.
  []
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 60.
+(Font)              <7> on input line 59.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 60.
+(Font)              <5> on input line 59.
 [2] [3] [4] (Lab2.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `Lab2.out' has not changed.
-(rerunfilecheck)             Checksum: E28D40F575B14DE9A9C6512DBC5C03B5;745.
+(rerunfilecheck)             Checksum: C2E87FEF912D1E7FF65F0C96B372ACDD;896.
  ) 
 Here is how much of TeX's memory you used:
- 9179 strings out of 469803
- 148125 string characters out of 5470981
- 558786 words of memory out of 5000000
- 37755 multiletter control sequences out of 15000+600000
+ 9183 strings out of 469803
+ 148185 string characters out of 5470981
+ 557786 words of memory out of 5000000
+ 37757 multiletter control sequences out of 15000+600000
  632610 words of font info for 56 fonts, out of 8000000 for 9000
  0 hyphenation exceptions out of 8191
- 75i,10n,79p,313b,446s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,313b,518s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </home/skyh1ghdev/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk></opt/miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmbx10.pfb></opt/miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmbx12.pfb></opt/miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr10.pfb></opt/miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr12.pfb></opt/miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr17.pfb></opt/miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr9.pfb>
-Output written on Lab2.pdf (4 pages, 96543 bytes).
+Output written on Lab2.pdf (4 pages, 99039 bytes).
 PDF statistics:
- 88 PDF objects out of 1000 (max. 8388607)
- 13 named destinations out of 1000 (max. 500000)
- 49 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 96 PDF objects out of 1000 (max. 8388607)
+ 15 named destinations out of 1000 (max. 500000)
+ 65 words of extra memory for PDF output out of 10000 (max. 10000000)
 

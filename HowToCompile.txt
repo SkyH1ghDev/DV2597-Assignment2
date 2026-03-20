@@ -1,0 +1,4 @@
+1. Open your console of choice
+2a. do "cmake -S . -B ./Build"
+2b. do "cmake --build ./Build --target GaussJordanC OddEvenSortC GaussJordanCuda OddEvenSortCuda"
+3. Open the new "Build" folder and executables should be there

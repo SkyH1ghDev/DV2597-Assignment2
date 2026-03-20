@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1773878839.25003 "/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Latex/Lab2.tex" "Lab2.pdf" "Lab2" 1773878839.43204 0
+["pdflatex"] 1774024595.06346 "/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Latex/Lab2.tex" "Lab2.pdf" "Lab2" 1774024595.27709 0
   "/home/skyh1ghdev/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map" 1773865006.62491 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "/home/skyh1ghdev/.miktex/texmfs/data/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1772989650.87018 11548 97640fb493a13566a19a0ed7df32eab4 ""
   "/home/skyh1ghdev/.miktex/texmfs/data/miktex/data/le/pdftex/pdflatex.fmt" 1772989647.15128 10132361 e14e6f1825c81e82dc6696b6f7b3ee95 ""
@@ -23,7 +23,7 @@
   "/home/skyh1ghdev/.miktex/texmfs/install/tex/latex/refcount/refcount.sty" 1773864995.21897 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "/home/skyh1ghdev/.miktex/texmfs/install/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1773865002.50456 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "/home/skyh1ghdev/.miktex/texmfs/install/tex/latex/threeparttable/threeparttable.sty" 1773865006.49437 13506 a4e71a27db1a69b6fabada5beebf0844 ""
-  "/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Latex/Lab2.tex" 1773878838.77255 5191 7d451b3a29e28e85bb5ab49686065a1f ""
+  "/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Latex/Lab2.tex" 1774024594.81736 6405 548703435f545863a34a75f3af7be7b4 ""
   "/opt/miktex/texmfs/install/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1772989541.52818 1436 c7f957a372ef2fbe93c0982f96625e12 ""
   "/opt/miktex/texmfs/install/fonts/tfm/public/cm/cmbx10.tfm" 1772989538.58721 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/opt/miktex/texmfs/install/fonts/tfm/public/cm/cmbx12.tfm" 1772989538.58723 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -58,9 +58,9 @@
   "/opt/miktex/texmfs/install/tex/latex/l3backend/l3backend-pdftex.def" 1772989550.68739 30662 bfd6e864f4ffc5018b0e2b6260c3181c ""
   "/opt/miktex/texmfs/install/tex/latex/tools/array.sty" 1772989552.97994 15651 9d7c62df82cb29a555c00550babfe364 ""
   "/opt/miktex/texmfs/install/tex/latex/url/url.sty" 1772989598.23037 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
-  "Lab2.aux" 1773878839.39791 1160 e5b4b575041d0e32539fff8a3e9fadeb "pdflatex"
-  "Lab2.out" 1773878839.39791 745 e28d40f575b14de9a9c6512dbc5c03b5 "pdflatex"
-  "Lab2.tex" 1773878838.77255 5191 7d451b3a29e28e85bb5ab49686065a1f ""
+  "Lab2.aux" 1774024595.23256 1380 6115eb930075e27d00075487e683ec6b "pdflatex"
+  "Lab2.out" 1774024595.23256 896 c2e87fef912d1e7ff65f0c96b372acdd "pdflatex"
+  "Lab2.tex" 1774024594.81736 6405 548703435f545863a34a75f3af7be7b4 ""
   (generated)
   "Lab2.aux"
   "Lab2.log"

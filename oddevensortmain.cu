@@ -48,7 +48,12 @@ __host__ int main()
         cudaMemcpy(cudaData, numbers.data(), cudaDataSize, cudaMemcpyHostToDevice);
 
         auto start = std::chrono::steady_clock::now();
+
+        // ONE KERNEL
+
         //OneBlockSort<<<1, 1024>>>(cudaData, numbers.size());
+
+        // MULTIPLE KERNELS
 
         for (int i = 0; i < cudaDataSize; ++i)
         {

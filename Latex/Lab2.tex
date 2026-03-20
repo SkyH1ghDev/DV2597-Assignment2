@@ -16,117 +16,130 @@
 
 \newpage
 
-\section{Odd-Even Sort}
+\section{Gauss-Jordan}
 
 \subsection{Implementation}
 
-Quick sort is an algorithm that depends on the idea of segmenting a list of numbers based on
-pivot that is decided by a heuristic function that may be adjusted according to the needs and
-assumptions of a program. An optimised parallellisation of this algorithm could require multiple 
-techniques and mechanics.
-
-In my specific case, two main principles were used:
+Gauss-Jordan is a continuation on the Gauss elimination algorithm which not only reduces a matrix to triangular form,
+but also further reduces it into a reduced row echelon form that can be used to present solutions to linear equations.
+The main difference between Gauss and Gauss-Jordan is the fact that the latter adds an additional elimination step that
+also handles the upper-right part of the matrix resulting in a diagonal with 1s and the rest of the matrix being 0s.
+How I implement the algorithm in CUDA is through a multitude of kernels that each complete a certain section of the algorithm
+in order for the whole algorithm to be thread-safe.
+More specifically how each kernel is constructed:
 
 \begin{itemize}
-    \item Thread Separation
-    \subitem{\textbf{-}} As a naive implementation of a parallellised quick sort algorithm could 
-    cause different issues such as data races, a work separation strategy needs to be created. In
-    my case I decided to give each thread their own area of responsibilty by only allowing one thread
-    to access one of the halves that have been partitioned by the heuristic function. This consequently
-    makes each partition single-threaded but the entire list multi-threaded, resolving any potential
-    conflicts.
+	\item Division
+	\subitem{\textbf{-}} This kernel only handles the division of the affected row, similar to Gauss. It divides the entire row
+	of elements.
 
-    \item Work \& Thread Pooling
-    \subitem{\textbf{-}} An optimisation that had to be implemented for the parallell variant to be 
-    faster than the sequential one, was pooling. What this does is create all required threads from the
-    start, minimising the overhead of thread creation and maximising reuse where possible. 
-    
-    The work pooling aspect works by creating an array of double-ended queues (henceforth known as DE-queues) 
-    with work with one array index per thread. After a thread has successfully partitioned a segment, both 
-    the left and right hand sides of that segment get pushed up to that threads DE-queue. The thread then pops
-    the next piece of work from the front of its own DE-queue. If a threads DE-queue is empty, it will actively
-    try to steal work from other threads by taking from the back end of their DE-queues, resulting in a better 
-    management and a more proper distribution of work.
+	\item Post-Division
+	\subitem{\textbf{-}} The Post-Division step as I call it, is the setting of the diagonal element to 1. This step is within a 
+	critical zone which entails that it has to be accessed with restrictions such as no more than one thread may write to the data
+	at one time. It may seem odd to launch a kernel with only one block and one thread, however this is more than likely faster than
+	copying the data to the cpu, doing the small calculation, and then copying it back to the gpu for further processing.
 
-    For further optimisation, the overhead of work pooling has been taken into account. The cut-off point for 
-    the thread to simply continue without pushing up to a queue is therefore set to 10000.
+	\item Elimination 1
+	\subitem{\textbf{-}} The first elimination is the last step of Gauss elimination where the matrix gets transformed into triangular
+	form. The optimisations that have been employed include the usage of shared memory which results in faster memory accesses. This does
+	however add slight complexity and the requirement of preparing the data by copying it into shared memory. This is done in parallel, as
+	each thread has the responsibility for their own part of shared memory. The threads are then synced as to ensure the data has been
+	prepared before using it.
+
+	\item Elimination 2
+	\subitem{\textbf{-}} The step that essentially replicates what Elimination 1 is doing, with the exception that the upper-right part
+	of the matrix is being eliminated.
 \end{itemize}
 
 \subsection{Measurements}
 
 \begin{table}[H]
-	\caption{Measurements - Quick Sort}
+	\caption{Measurements - Gauss-Jordan}
 	\begin{center}
-		\begin{tabular}{ | m{10em} | m{8em} |} 
+		\begin{tabular}{ | m{9em} | m{8em} | m{8em} |} 
 			\hline
-			Number of Threads & Average Time (s) \\
-			\hline
-			\hline
-			Sequential & 16.10266 \\
+			Number of Threads & Number of Blocks & Average Time (s) \\
 			\hline
 			\hline
-			Parallell (1 Thread) & 17.93206 \\
-			Parallell (2 Threads) & 9.63332 \\
-			Parallell (4 Threads) & 5.338844 \\
-			Parallell (8 Threads) & 3.70554 \\
-			Parallell (16 Threads) & 2.833684 \\
-			Parallell (32 Threads) & 2.667642 \\
+			Sequential & N/A & 0.611805 \\
+			\hline
+			\hline
+			16 Threads & 128 Blocks & 0.554073 \\
+			32 Threads & 64 Blocks & 0.41007 \\
+			64 Threads & 32 Blocks & 0.358646 \\
+			128 Threads & 16 Blocks & 0.291275 \\
 			\hline
 		\end{tabular}
 	\end{center}
 	\begin{tablenotes}
 		\small
-		\item Table 1: Average execution times of the sequential and parallell variants of quick sort respectively. 
+		\item Table 1: Average execution times of the sequential and parallell variants of gauss-jordan respectively. 
 	\end{tablenotes}
 \end{table}
 
-\section{Gaussian Elimination}
+\subsection{Analysis}
+
+The measurements show that CUDA in general performs between 10.5\% and 110.0\% faster depending on block/thread distribution. This is most likely
+due to the utilisation of parallellism and shared memory. 
+
+\section{Odd-Even Sort}
 
 \subsection{Implementation}
 
-Gaussian elimination is a mathematical method that can help find the solutions to certain linear equations. It works
-by taking a given matrix and systematically dividing each row as well as eliminating each column which consequently
-zeroes out each element under the matrix diagonal.
+The Odd-Even Sort is generally not the fastest sorting algorithm. However, due to the nature of the sorting, the algorithm is fit for massive
+parallellisation. The mechanism works by iteratively checking and swapping elements based on whether the index is even or odd, hence the name.
+This makes it possible to rather than sequentially, compute the sorting algorithm in parallell passes between odd and even.
+There are a couple of ways to implement this in CUDA, here is how I did it:
 
-A parallellisation of this algorithm requires the understanding of critical zones and work distribution between threads
-as to not to cause data races and data corruption. For that reason, my implementation makes use of both barriers and single
-threading in affected areas.
+\begin{itemize}
+	\item Single Kernel
+	\subitem{\textbf{-}} My implementation of the single block kernel uses two thread syncs as to ensure that the data doesn't corrupt or become
+	invalid. Each thread gets an odd index that is based on its thread ID which then gets reassigned cyclically in order to satisfy the entire list
+	and not just the first section. Then the algorithm starts by comparing the element at its index and the one to the left of it. This is done for
+	all indices before syncing all threads. After that, a similar process is done for the right side. The process then repeats until it is fully sorted.
 
-First of all, we replicate the division step by assigning elements to each thread according to their thread ID and dividing
-them with the element on the diagonal. Since each element is reliant on the diagonal element, these need to be done first.
-After this, in order to ensure no data races happen, only the thread with ID 0 changes the value of the result and the diagonal
-diagonal element.
-
-After this, the elimination step occurs. Like the previous step, each thread gets assigned elements based on the thread ID.
-The elements then adjust the rows below the current row using the current rows values and also setting the column below the
-diagonal to 0.0. Both steps then repeat for all rows.
+	\item Multiple Kernels
+	\subitem{\textbf{-}} As for the implementation with multiple blocks, I chose to separate the sorting algorithm into two kernels. One that handles the
+	comparison with the left side, and one that handles the right side. This version abstracts away the need for thread syncing as the CPU handles the kernel
+	launching which also implicates that the threads will be synced up before launching the next kernel. The cyclic assignment is also handled implicitly 
+	in the form of blocks.
+\end{itemize}
 
 \subsection{Measurements}
 
 \begin{table}[H]
-	\caption{Measurements - Gauss Elimination}
+	\caption{Measurements - Odd-Even Sort}
 	\begin{center}
-		\begin{tabular}{ | m{10em} | m{8em} |} 
+		\begin{tabular}{ | m{14em} | m{8em} | m{8em} |} 
 			\hline
-			Number of Threads & Average Time (s) \\
-			\hline
-			\hline
-			Sequential & 10.93124 \\
+			Number of Threads & Number of Blocks & Average Time (s) \\
 			\hline
 			\hline
-			Parallell (1 Thread) & 12.33312 \\
-			Parallell (2 Threads) & 6.700142 \\
-			Parallell (4 Threads) & 3.875878\\
-			Parallell (8 Threads) & 2.775094 \\
-			Parallell (16 Threads) & 2.386 \\
-			Parallell (32 Threads) & 1.915616 \\
+			Sequential & N/A & 103.59671 \\
 			\hline
+			\hline
+			Single Kernel (1024 Threads) & 1 Block & 39.704628 \\
+			\hline
+			\hline
+			64 Threads & 4096 Blocks & 12.964334 \\
+			128 Threads & 2048 Blocks & 8.134778 \\
+			256 Threads & 1024 Blocks & 8.067528 \\
+			512 Threads & 512 Blocks & 8.414528 \\
+			1024 Threads & 256 Blocks & 12.341005 \\
+			\hline
+			
 		\end{tabular}
 	\end{center}
 	\begin{tablenotes}
 		\small
-		\item Table 2: Average execution times of the sequential and parallell variants of gauss elimination respectively. 
+		\item Table 1: Average execution times of the sequential and parallell variants of odd-even sort respectively. 
 	\end{tablenotes}
 \end{table}
 
+\subsection{Analysis}
+
+As seen in the measurements, we can see a 160.9\% increase in performance for the single kernel variant and between 699.1\%
+and 1184.1\% performance increase for the multiple kernel variant. The single kernel variant suffers from major performance 
+losses compared to the multi-kernel version most likely due to the restriction of threads that are active concurrently. The
+multiple kernels allow for more blocks to be working simultaneously.
 \end{document} 
