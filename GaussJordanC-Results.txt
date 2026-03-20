@@ -1,0 +1,11 @@
+Gauss Jordan
+Iteration: 0, Time elapsed: 0.638786334s
+Iteration: 1, Time elapsed: 0.60802094s
+Iteration: 2, Time elapsed: 0.606300576s
+Iteration: 3, Time elapsed: 0.607344685s
+Iteration: 4, Time elapsed: 0.617116752s
+Iteration: 5, Time elapsed: 0.610168821s
+Iteration: 6, Time elapsed: 0.607361756s
+Iteration: 7, Time elapsed: 0.607514985s
+Iteration: 8, Time elapsed: 0.60827064s
+Iteration: 9, Time elapsed: 0.607160056s

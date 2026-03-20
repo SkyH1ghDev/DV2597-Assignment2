@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(Assignment2 LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "-O2")
 
 # CPU
 add_executable(GaussJordanC
@@ -15,7 +16,7 @@ add_executable(OddEvenSortC
 # CUDA
 
 set(CUDA_VERBOSE_BUILD ON)
-set(CMAKE_CUDA_FLAGS_DEBUG "-g -G --expt-relaxed-constexpr")
+set(CMAKE_CUDA_FLAGS "--expt-relaxed-constexpr")
 
 set(ODDEVEN_HEADERS oddevensort.cuh)
 add_executable(OddEvenSortCuda

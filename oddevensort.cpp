@@ -37,16 +37,22 @@ int main()
 {
     constexpr unsigned int size = 1 << 19; // Number of elements in the input
 
-    // Initialize a vector with integers of value 0
-    std::vector<int> numbers(size);
-    // Populate our vector with (pseudo)random numbers
-    srand(time(0));
-    std::generate(numbers.begin(), numbers.end(), rand);
+    srand(time(nullptr));
 
-    print_sort_status(numbers);
-    auto start = std::chrono::steady_clock::now();
-    oddeven_sort(numbers);
-    auto end = std::chrono::steady_clock::now();
-    print_sort_status(numbers);
-    std::cout << "Elapsed time =  " << std::chrono::duration<double>(end - start).count() << " sec\n";
+    for (int i{0}; i < 5; i++)
+    {
+        // Initialize a vector with integers of value 0
+        std::vector<int> numbers(size);
+
+        // Populate our vector with (pseudo)random numbers
+        std::ranges::generate(numbers, rand);
+        print_sort_status(numbers);
+
+        auto start = std::chrono::steady_clock::now();
+        oddeven_sort(numbers);
+        auto end = std::chrono::steady_clock::now();
+
+        print_sort_status(numbers);
+        std::cout << std::format("Iteration: {}, Time elapsed: {}s\n", i, std::chrono::duration<double>(end - start).count());
+    }
 }

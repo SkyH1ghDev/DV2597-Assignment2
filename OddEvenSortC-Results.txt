@@ -1,0 +1,10 @@
+Iteration: 0, Time elapsed: 104.129318104s
+Iteration: 1, Time elapsed: 103.758729125s
+Iteration: 2, Time elapsed: 103.836330025s
+Iteration: 3, Time elapsed: 103.658352212s
+Iteration: 4, Time elapsed: 103.619183772s
+Iteration: 5, Time elapsed: 104.154027334s
+Iteration: 6, Time elapsed: 103.21017745s
+Iteration: 7, Time elapsed: 103.365343817s
+Iteration: 8, Time elapsed: 102.918694508s
+Iteration: 9, Time elapsed: 103.316940321s

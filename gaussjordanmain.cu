@@ -70,10 +70,10 @@ __host__ void Init_Matrix(std::array<double, MAX_SIZE * MAX_SIZE>& pMatrix, std:
 {
     int i, j;
 
-    printf("\nsize      = %lux%lu ", pNumElements, pNumElements);
-    printf("\nmaxnum    = %lu \n", pMaxElementValue);
-    printf("Init	  = %s \n", pInitType.data());
-    printf("Initializing matrix...");
+    //printf("\nsize      = %lux%lu ", pNumElements, pNumElements);
+    //printf("\nmaxnum    = %lu \n", pMaxElementValue);
+    //printf("Init	  = %s \n", pInitType.data());
+    //printf("Initializing matrix...");
 
     if (strcmp(pInitType.data(), "rand") == 0) {
         for (i = 0; i < pNumElements; i++) {
@@ -102,7 +102,7 @@ __host__ void Init_Matrix(std::array<double, MAX_SIZE * MAX_SIZE>& pMatrix, std:
         pResults[i] = 1.0;
     }
 
-    printf("done \n\n");
+    //printf("done \n\n");
     if (pPrintFlag)
         Print_Matrix(pMatrix, pResults, pNumElements);
 }
@@ -138,73 +138,63 @@ __host__ int main(int argc, char** argv)
     std::string initType {"fast"};
     bool printFlag {false};
 
-    printf("Gauss Jordan\n");
-
     Read_Options(argc, argv, initType, numElements, maxElementValue, printFlag);
-    Init_Matrix(matrix, equalities, results, initType, numElements, maxElementValue, printFlag);
 
-    double* cudaMatrix = nullptr;
-    std::size_t cudaMatrixSize = sizeof(*cudaMatrix) * numElements * numElements;
-
-    double* cudaEqualities = nullptr;
-    std::size_t cudaEqualitiesSize = sizeof(*cudaEqualities) * numElements;
-
-    double* cudaResults = nullptr;
-    std::size_t cudaResultsSize = sizeof(*cudaResults) * numElements;
-
-    cudaError_t cudaErr = cudaMalloc(reinterpret_cast<void**>(&cudaMatrix), cudaMatrixSize);
-    if (cudaErr != cudaSuccess)
+    for (int i{0}; i < 20; ++i)
     {
-        std::cout << "Cuda Error Malloc 1: " << cudaGetErrorString(cudaErr) << "\n";
+        Init_Matrix(matrix, equalities, results, initType, numElements, maxElementValue, printFlag);
+
+        double* cudaMatrix = nullptr;
+        std::size_t cudaMatrixSize = sizeof(*cudaMatrix) * numElements * numElements;
+
+        double* cudaEqualities = nullptr;
+        std::size_t cudaEqualitiesSize = sizeof(*cudaEqualities) * numElements;
+
+        double* cudaResults = nullptr;
+        std::size_t cudaResultsSize = sizeof(*cudaResults) * numElements;
+
+        cudaMalloc(reinterpret_cast<void**>(&cudaMatrix), cudaMatrixSize);
+        cudaMalloc(reinterpret_cast<void**>(&cudaEqualities), cudaEqualitiesSize);
+        cudaMalloc(reinterpret_cast<void**>(&cudaResults), cudaResultsSize);
+
+        cudaMemcpy(cudaMatrix, matrix.data(), cudaMatrixSize, cudaMemcpyHostToDevice);
+        cudaMemcpy(cudaEqualities, equalities.data(), cudaEqualitiesSize, cudaMemcpyHostToDevice);
+        cudaMemcpy(cudaResults, results.data(), cudaResultsSize, cudaMemcpyHostToDevice);
+
+        std::uint32_t numBlocks {16 * static_cast<std::uint32_t>(pow(2, static_cast<std::uint32_t>(i / 4)))};
+        std::uint32_t numThreads {128 / static_cast<std::uint32_t>(pow(2, static_cast<std::uint32_t>(i / 4)))};
+
+        auto start = std::chrono::steady_clock::now();
+
+        for (std::size_t row {0}; row < numElements; ++row)
+        {
+            const std::uint64_t a {numElements * sizeof(double)};
+            const std::uint64_t b {numThreads * sizeof(double)};
+            const std::uint64_t sharedMemorySize {a + b};
+
+            Division<<<numBlocks, numThreads>>>(cudaMatrix, numElements, row);
+            PostDivision<<<1, 1>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row);
+            Elimination<<<numBlocks, numThreads, sharedMemorySize>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row, a);
+            EliminationTwo<<<numBlocks, numThreads, sharedMemorySize>>>(cudaMatrix, cudaResults, numElements, row, a);
+        }
+
+        auto end = std::chrono::steady_clock::now();
+
+        cudaMemcpy(matrix.data(), cudaMatrix, cudaMatrixSize, cudaMemcpyDeviceToHost);
+        cudaMemcpy(equalities.data(), cudaEqualities, cudaEqualitiesSize, cudaMemcpyDeviceToHost);
+        cudaMemcpy(results.data(), cudaResults, cudaResultsSize, cudaMemcpyDeviceToHost);
+
+        cudaFree(cudaResults);
+        cudaFree(cudaEqualities);
+        cudaFree(cudaMatrix);
+
+        if (printFlag)
+        {
+            Print_Matrix(matrix, results, numElements);
+        }
+
+        std::cout << std::format("Iteration: {} (numBlocks: {}, numThreads: {}), Time elapsed: {}s\n", i, numBlocks, numThreads, std::chrono::duration<double>(end - start).count());
     }
 
-    cudaErr = cudaMalloc(reinterpret_cast<void**>(&cudaEqualities), cudaEqualitiesSize);
-    if (cudaErr != cudaSuccess)
-    {
-        std::cout << "Cuda Error Malloc 2: " << cudaGetErrorString(cudaErr) << "\n";
-    }
 
-    cudaErr = cudaMalloc(reinterpret_cast<void**>(&cudaResults), cudaResultsSize);
-    if (cudaErr != cudaSuccess)
-    {
-        std::cout << "Cuda Error Malloc 3: " << cudaGetErrorString(cudaErr) << "\n";
-    }
-
-    cudaMemcpy(cudaMatrix, matrix.data(), cudaMatrixSize, cudaMemcpyHostToDevice);
-    cudaMemcpy(cudaEqualities, equalities.data(), cudaEqualitiesSize, cudaMemcpyHostToDevice);
-    cudaMemcpy(cudaResults, results.data(), cudaResultsSize, cudaMemcpyHostToDevice);
-
-    auto start = std::chrono::steady_clock::now();
-
-    for (std::size_t row {0}; row < numElements; ++row)
-    {
-        constexpr std::uint32_t numBlocks {64};
-        constexpr std::uint32_t numThreads {32};
-
-        const std::uint64_t a {numElements * sizeof(double)};
-        const std::uint64_t b {numThreads * sizeof(double)};
-        const std::uint64_t sharedMemorySize {a + b};
-
-        Division<<<numBlocks, numThreads>>>(cudaMatrix, numElements, row);
-        PostDivision<<<1, 1>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row);
-        Elimination<<<numBlocks, numThreads, sharedMemorySize>>>(cudaMatrix, cudaEqualities, cudaResults, numElements, row, a);
-        EliminationTwo<<<numBlocks, numThreads, sharedMemorySize>>>(cudaMatrix, cudaResults, numElements, row, a);
-    }
-
-    auto end = std::chrono::steady_clock::now();
-
-    cudaMemcpy(matrix.data(), cudaMatrix, cudaMatrixSize, cudaMemcpyDeviceToHost);
-    cudaMemcpy(equalities.data(), cudaEqualities, cudaEqualitiesSize, cudaMemcpyDeviceToHost);
-    cudaMemcpy(results.data(), cudaResults, cudaResultsSize, cudaMemcpyDeviceToHost);
-
-    cudaFree(cudaResults);
-    cudaFree(cudaEqualities);
-    cudaFree(cudaMatrix);
-
-    if (printFlag)
-    {
-        Print_Matrix(matrix, results, numElements);
-    }
-
-    std::cout << "Elapsed time = " << std::chrono::duration<double> {end - start}.count() << " sec\n";
 }

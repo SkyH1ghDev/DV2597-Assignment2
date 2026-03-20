@@ -5,43 +5,43 @@
 __global__ void OneBlockSort(int* data, std::size_t dataSize)
 {
     const std::uint32_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
-    const std::uint32_t i = 2 * baseIndex + 1;
 
     for (int j = 0; j < dataSize; ++j)
     {
         __syncthreads();
 
-        if (i > dataSize)
+        std::uint32_t i = 2 * baseIndex + 1;
+
+        while (i < dataSize)
         {
-            goto sync1;
+            if (data[i - 1] > data[i])
+            {
+                std::swap(data[i], data[i - 1]);
+            }
+
+            i += 2 * blockDim.x;
         }
 
-        if (data[i] < data[i - 1])
-        {
-            std::swap(data[i], data[i - 1]);
-        }
-
-        sync1:
         __syncthreads();
 
-        if (i > dataSize || i + 1 > dataSize)
-        {
-            goto sync2;
-        }
+        i = 2 * baseIndex + 1;
 
-        if (data[i] > data[i + 1])
+        while (i + 1 < dataSize)
         {
-            std::swap(data[i], data[i + 1]);
-        }
+            if (data[i] > data[i + 1])
+            {
+                std::swap(data[i], data[i + 1]);
+            }
 
-        sync2:
+            i += 2 * blockDim.x;
+        }
     }
 }
 
 __global__ void MultiBlockSort_1(int* data, std::size_t dataSize)
 {
-    const std::size_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
-    const std::size_t i = 2 * baseIndex + 1;
+    const std::uint64_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
+    const std::uint64_t i = 2 * baseIndex + 1;
 
     if (i >= dataSize)
     {
@@ -56,8 +56,8 @@ __global__ void MultiBlockSort_1(int* data, std::size_t dataSize)
 
 __global__ void MultiBlockSort_2(int* data, std::size_t dataSize)
 {
-    const std::size_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
-    const std::size_t i = 2 * baseIndex + 1;
+    const std::uint64_t baseIndex = blockDim.x * blockIdx.x + threadIdx.x;
+    const std::uint64_t i = 2 * baseIndex + 1;
 
     if (i + 1 >= dataSize)
     {

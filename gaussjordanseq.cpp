@@ -37,18 +37,22 @@ main(int argc, char** argv)
 
     Init_Default();		/* Init default values	*/
     Read_Options(argc, argv);	/* Read arguments	*/
-    Init_Matrix();		/* Init the matrix	*/
 
-    auto start = std::chrono::steady_clock::now();
+    for (int i{0}; i < 10; ++i)
+    {
+        Init_Matrix();		/* Init the matrix	*/
 
-    work();
+        auto start = std::chrono::steady_clock::now();
 
-    auto end = std::chrono::steady_clock::now();
+        work();
 
-    if (PRINT == 1)
-        Print_Matrix();
+        auto end = std::chrono::steady_clock::now();
 
-    std::cout << "Elapsed time = " << std::chrono::duration<double> {end - start}.count() << " sec\n";
+        if (PRINT == 1)
+            Print_Matrix();
+
+        std::cout << std::format("Iteration: {}, Time elapsed: {}s\n", i, std::chrono::duration<double>(end - start).count());
+    }
 }
 
 void
@@ -84,10 +88,10 @@ Init_Matrix()
 {
     int i, j;
 
-    printf("\nsize      = %dx%d ", N, N);
-    printf("\nmaxnum    = %d \n", maxnum);
-    printf("Init	  = %s \n", Init);
-    printf("Initializing matrix...");
+    //printf("\nsize      = %dx%d ", N, N);
+    //printf("\nmaxnum    = %d \n", maxnum);
+    //printf("Init	  = %s \n", Init);
+    //printf("Initializing matrix...");
 
     if (strcmp(Init, "rand") == 0) {
         for (i = 0; i < N; i++) {
@@ -116,7 +120,7 @@ Init_Matrix()
         y[i] = 1.0;
     }
 
-    printf("done \n\n");
+    //printf("done \n\n");
     if (PRINT == 1)
         Print_Matrix();
 }

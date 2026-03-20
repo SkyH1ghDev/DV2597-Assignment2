@@ -1,0 +1,5 @@
+Iteration: 0 (numBlocks: 4096, numThreads: 64), Time elapsed: 39.393783895s
+Iteration: 1 (numBlocks: 4096, numThreads: 64), Time elapsed: 39.403362817s
+Iteration: 2 (numBlocks: 4096, numThreads: 64), Time elapsed: 39.766033519s
+Iteration: 3 (numBlocks: 4096, numThreads: 64), Time elapsed: 40.019435974s
+Iteration: 4 (numBlocks: 4096, numThreads: 64), Time elapsed: 39.94052329s
