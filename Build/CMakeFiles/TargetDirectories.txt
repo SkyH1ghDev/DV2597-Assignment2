@@ -1,0 +1,6 @@
+/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Build/CMakeFiles/GaussJordanC.dir
+/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Build/CMakeFiles/OddEvenSortC.dir
+/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Build/CMakeFiles/OddEvenSortCuda.dir
+/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Build/CMakeFiles/GaussJordanCuda.dir
+/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Build/CMakeFiles/edit_cache.dir
+/mnt/m2ssd/Programming/Projects/DV2597/Assignment2/Build/CMakeFiles/rebuild_cache.dir

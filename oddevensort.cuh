@@ -1,3 +1,5 @@
+#pragma once
+
 __global__ void OneBlockSort(int* data, int dataSize);
 
 __global__ void MultiBlockSort_1(int* data, std::size_t dataSize);

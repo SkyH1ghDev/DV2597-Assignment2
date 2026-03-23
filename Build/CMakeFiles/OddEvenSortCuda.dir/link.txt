@@ -1,0 +1,1 @@
+/usr/bin/g++ -Wl,--dependency-file=CMakeFiles/OddEvenSortCuda.dir/link.d @CMakeFiles/OddEvenSortCuda.dir/objects1.rsp -o OddEvenSortCuda @CMakeFiles/OddEvenSortCuda.dir/linkLibs.rsp -L"/opt/cuda/targets/x86_64-linux/lib/stubs" -L"/opt/cuda/targets/x86_64-linux/lib"

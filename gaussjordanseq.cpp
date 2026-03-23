@@ -38,7 +38,7 @@ main(int argc, char** argv)
     Init_Default();		/* Init default values	*/
     Read_Options(argc, argv);	/* Read arguments	*/
 
-    for (int i{0}; i < 10; ++i)
+    //for (int i{0}; i < 10; ++i)
     {
         Init_Matrix();		/* Init the matrix	*/
 

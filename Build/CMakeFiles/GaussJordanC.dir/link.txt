@@ -1,0 +1,1 @@
+/usr/bin/c++ -O2 -Wl,--dependency-file=CMakeFiles/GaussJordanC.dir/link.d CMakeFiles/GaussJordanC.dir/gaussjordanseq.cpp.o -o GaussJordanC

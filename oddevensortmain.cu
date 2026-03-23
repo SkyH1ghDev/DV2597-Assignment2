@@ -55,11 +55,13 @@ __host__ int main()
 
         // MULTIPLE KERNELS
 
-        for (int i = 0; i < cudaDataSize; ++i)
+        MultiBlockSort_1<<<1, 1024>>>(cudaData, numbers.size());
+
+        /*for (int i = 0; i < cudaDataSize; ++i)
         {
             MultiBlockSort_1<<<numBlocks, numThreads>>>(cudaData, numbers.size());
             MultiBlockSort_2<<<numBlocks, numThreads>>>(cudaData, numbers.size());
-        }
+        }*/
 
         cudaDeviceSynchronize();
         auto end = std::chrono::steady_clock::now();

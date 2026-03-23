@@ -1,0 +1,1 @@
+/usr/bin/c++ -O2 -Wl,--dependency-file=CMakeFiles/OddEvenSortC.dir/link.d CMakeFiles/OddEvenSortC.dir/oddevensort.cpp.o -o OddEvenSortC

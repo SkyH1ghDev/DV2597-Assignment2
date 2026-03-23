@@ -140,7 +140,7 @@ __host__ int main(int argc, char** argv)
 
     Read_Options(argc, argv, initType, numElements, maxElementValue, printFlag);
 
-    for (int i{0}; i < 20; ++i)
+    //for (int i{0}; i < 20; ++i)
     {
         Init_Matrix(matrix, equalities, results, initType, numElements, maxElementValue, printFlag);
 
@@ -161,8 +161,8 @@ __host__ int main(int argc, char** argv)
         cudaMemcpy(cudaEqualities, equalities.data(), cudaEqualitiesSize, cudaMemcpyHostToDevice);
         cudaMemcpy(cudaResults, results.data(), cudaResultsSize, cudaMemcpyHostToDevice);
 
-        std::uint32_t numBlocks {16 * static_cast<std::uint32_t>(pow(2, static_cast<std::uint32_t>(i / 4)))};
-        std::uint32_t numThreads {128 / static_cast<std::uint32_t>(pow(2, static_cast<std::uint32_t>(i / 4)))};
+        std::uint32_t numBlocks {16 * static_cast<std::uint32_t>(pow(2, static_cast<std::uint32_t>(4 / 4)))};
+        std::uint32_t numThreads {128 / static_cast<std::uint32_t>(pow(2, static_cast<std::uint32_t>(4 / 4)))};
 
         auto start = std::chrono::steady_clock::now();
 
@@ -193,7 +193,7 @@ __host__ int main(int argc, char** argv)
             Print_Matrix(matrix, results, numElements);
         }
 
-        std::cout << std::format("Iteration: {} (numBlocks: {}, numThreads: {}), Time elapsed: {}s\n", i, numBlocks, numThreads, std::chrono::duration<double>(end - start).count());
+        std::cout << std::format("Iteration:  (numBlocks: {}, numThreads: {}), Time elapsed: {}s\n", /*i,*/ numBlocks, numThreads, std::chrono::duration<double>(end - start).count());
     }
 
 
